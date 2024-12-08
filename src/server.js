@@ -5,38 +5,16 @@ require('dotenv').config();
 
 // Import routes
 const authRoutes = require('./routes/authRoutes.js');
-const predictRoutes = require('./routes/predictRoutes');
-
-// const batikRoutes = require('./src/routes/batikRoutes');
-// const newsRoutes = require('./src/routes/newsRoutes');
-// const forumRoutes = require('./src/routes/forumRoutes');
-
-// Database connection
-// const connectDB = require('./src/config/database');
 
 const app = express();
 
 // Middleware
-app.use(express.json()); // Parse JSON request bodies
-app.use(cors()); // Enable CORS
-app.use(morgan('dev')); // Logging HTTP requests
-
-// Connect to the database
-// connectDB();
+app.use(express.json()); 
+app.use(cors()); 
+app.use(morgan('dev'));
 
 // Routes
 app.use('/api/auth', authRoutes);
-app.use('/api/batik', predictRoutes);
-
-// app.use('/api/batik', batikRoutes);
-// app.use('/api/news', newsRoutes);
-// app.use('/api/forum', forumRoutes);
-
-// Root endpoint
-app.get('/', (req, res) => {
-    res.send('Welcome to the Batik API!');
-});
-
 
 // 404 handler 
 /* eslint-enable no-unused-vars */
