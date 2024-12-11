@@ -22,12 +22,10 @@ exports.registerUser = async (req, res) => {
 
     // Periksa apakah pengguna sudah ada
     console.log("Mencari pengguna dengan email:", email);
-    // eslint-disable-next-line no-undef
     const userRef = firestore.collection("users").where("email", "==", email);
     const userSnapshot = await userRef.get();
     console.log("Hasil pencarian pengguna:", userSnapshot.empty);
 
-    // Jika pengguna sudah terdaftar, kirimkan pesan kesalahan
     if (!userSnapshot.empty) {
       return res.status(400).json({ message: "Pengguna sudah terdaftar" });
     }
@@ -44,10 +42,16 @@ exports.registerUser = async (req, res) => {
     };
 
     // Simpan pengguna baru ke Firestore
-    // eslint-disable-next-line no-undef
-    await firestore.collection("users").add(newUser);
+    const userDocRef = await firestore.collection("users").add(newUser);
 
-    return res.status(201).json({ message: "Pengguna berhasil terdaftar" });
+    // Ambil userId dari Firestore (ID dokumen pengguna)
+    const userId = userDocRef.id;
+
+    // Kembalikan response dengan userId
+    return res.status(201).json({
+      message: "Pengguna berhasil terdaftar",
+      userId, // Sertakan userId dalam respons
+    });
   } catch (err) {
     console.error("Terjadi kesalahan saat mendaftar pengguna:", err);
     return res.status(500).json({ message: "Terjadi kesalahan server" });
@@ -68,6 +72,7 @@ exports.loginUser = async (req, res) => {
 
     const userData = userSnapshot.docs[0].data();
     const userId = userSnapshot.docs[0].id; // Ambil ID dokumen pengguna dari Firestore
+    const fullName = userData.fullName; // Ambil fullName dari data pengguna
 
     // Periksa password
     const isPasswordValid = await bcrypt.compare(password, userData.password);
@@ -82,7 +87,13 @@ exports.loginUser = async (req, res) => {
       { expiresIn: "1h" }
     );
 
-    return res.json({ token });
+    // Kirimkan response dengan token, userId, dan fullName
+    return res.json({
+      message: "Login berhasil",
+      token,
+      userId, // Sertakan userId dalam respons
+      fullName, // Sertakan fullName dalam respons
+    });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ message: "Terjadi kesalahan server" });
