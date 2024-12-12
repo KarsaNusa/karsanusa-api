@@ -2,3 +2,6 @@ node_modules
 .env
 src/config/karsanusa-capstone-443810-074282da1137.json
 .gitignore
+.eslintrc.json
+eslint.config.mjs
+README.md
